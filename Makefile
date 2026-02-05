@@ -1,6 +1,7 @@
 # Makefile
 
 SHELL := /usr/bin/bash
+PLATFORM ?= native
 
 OBJDIR = obj
 INCDIR = inc
@@ -25,27 +26,45 @@ else
     SLASH = \\
 endif
 
-CC = gcc
-
 # Raylib
 RAYLIB_INC = raylib/include
-RAYLIB_LIB = raylib/lib
-RAYLIB_FLAGS = -L$(RAYLIB_LIB) -lraylib -lopengl32 -lgdi32 -lwinmm
+
+RAYLIB_LIB_NATIVE = raylib/lib
+RAYLIB_LIB_WEB    = raylib/web
+SHELL_FILE        = raylib/web/shell.html
+ICO_FILE          = raylib/web/favicon.ico
 
 INC_LOCATIONS = $(shell find "$(INCDIR)" "$(SRCDIR)" "$(RAYLIB_INC)" -type d)
 INC_FLAGS     = $(addprefix -I,$(INC_LOCATIONS))
-CFLAGS = $(INC_FLAGS) -std=c99 -O2 -MMD -MP
+
+ifeq ($(PLATFORM),web)
+	CC = emcc
+    RAYLIB_LIB = $(RAYLIB_LIB_WEB)
+	RAYLIB_FLAGS = -L$(RAYLIB_LIB) -lraylib -sUSE_GLFW=3 \
+				   -sSTACK_SIZE=1048576 -sALLOW_MEMORY_GROWTH=1 --shell-file $(SHELL_FILE)
+	CFLAGS = $(INC_FLAGS) -std=c99 -O3 -MMD -MP 
+	TARGET = index.html
+else
+	CC = gcc
+    RAYLIB_LIB = $(RAYLIB_LIB_NATIVE)
+    RAYLIB_FLAGS = -L$(RAYLIB_LIB) -lraylib \
+                   -lopengl32 -lgdi32 -lwinmm
+	CFLAGS = $(INC_FLAGS) -std=c99 -O2 -MMD -MP
+	TARGET = main$(EXE)
+endif
 
 # Recursive source file discovery
 srcs      = $(shell find "$(SRCDIR)" -name "*.c")
 src_objs  = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(srcs))
 deps      = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.d, $(srcs))
 
-all: $(BINDIR)/main$(EXE)
 
-$(BINDIR)/main$(EXE): $(src_objs)
-	@echo Linking $@ from obj/*
+all: $(BINDIR)/$(TARGET)
+
+$(BINDIR)/$(TARGET): $(src_objs)
+	@echo Linking $@
 	@$(CC) $^ -o $@ -s $(RAYLIB_FLAGS)
+	cp $(ICO_FILE) $(BINDIR)
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo Compiling $< to $@

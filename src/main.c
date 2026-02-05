@@ -28,6 +28,21 @@ int main(int argc, char** argv) {
 
 /**********************************************************************/
 
+#ifdef PLATFORM_WEB
+
+    #include <emscripten/emscripten.h>
+
+    void web_loop(void* state) {
+        ProgramState* web_state = (ProgramState*) state;
+        update_controls();
+        update_frame(web_state);
+        render_frame(web_state);
+    }
+
+#endif
+
+/**********************************************************************/
+
 int run_demo(void) {
     const int rows = RES;
     const int cols = RES;
@@ -49,11 +64,17 @@ int run_demo(void) {
     };
 
     render_init();
-    while (!render_escape()) {
-        update_controls();
-        update_frame(&state);
-        render_frame(&state);
-    }
+
+    #ifdef PLATFORM_WEB
+        emscripten_set_main_loop_arg(web_loop, &state, 0, 1);
+    # else
+        while (!render_escape()) {
+            update_controls();
+            update_frame(&state);
+            render_frame(&state);
+        }
+    #endif
+
     state.completed = 1;
     step_pde(&state); // Free buffer used for solving PDE
     render_end();

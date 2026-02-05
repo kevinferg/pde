@@ -5,7 +5,7 @@
 #include "types.h"
 #include "raylib.h"
 
-#define DEFAULT_WINDOW_NAME "Demo"
+#define DEFAULT_WINDOW_NAME "Interactive PDE Visualizer"
 
 typedef struct Window {
     int width, height;

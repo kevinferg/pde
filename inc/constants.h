@@ -1,12 +1,17 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+// Comment this out to compile locally
+// Otherwise make with make PLATFORM=web
+#define PLATFORM_WEB
+
+
 #define DEFAULT_WINDOW_WIDTH  1280
 #define DEFAULT_WINDOW_HEIGHT  720
 #define GRID_SCREEN_FRAC 0.9
 
 #define TARGET_FPS 60
-#define RES 512
+#define RES 256
 
 #define DEFAULT_SCALE       64.0f
 #define DEFAULT_DT          0.1f
