@@ -1,4 +1,12 @@
 # Makefile
+###############################################################
+# make              - Create bin/main or bin/main.exe
+# make clean        - Clear the obj, dep, and executable files
+# make PLATFORM=web - Compile for web
+###############################################################
+OPTIONS =  # !!! Must 'make clean' after changing an option !!!
+OPTIONS += RES=256
+###############################################################
 
 SHELL := /usr/bin/bash
 PLATFORM ?= native
@@ -40,9 +48,9 @@ INC_FLAGS     = $(addprefix -I,$(INC_LOCATIONS))
 ifeq ($(PLATFORM),web)
 	CC = emcc
     RAYLIB_LIB = $(RAYLIB_LIB_WEB)
-	RAYLIB_FLAGS = -L$(RAYLIB_LIB) -lraylib -sUSE_GLFW=3 \
+	RAYLIB_FLAGS = -L$(RAYLIB_LIB) -lraylib -sUSE_GLFW=3 -sEXPORTED_RUNTIME_METHODS=ccall \
 				   -sSTACK_SIZE=1048576 -sALLOW_MEMORY_GROWTH=1 --shell-file $(SHELL_FILE)
-	CFLAGS = $(INC_FLAGS) -std=c99 -O3 -MMD -MP 
+	CFLAGS = $(INC_FLAGS) -std=c99 -O3 -MMD -MP -DPLATFORM_WEB
 	TARGET = index.html
 else
 	CC = gcc
@@ -58,13 +66,19 @@ srcs      = $(shell find "$(SRCDIR)" -name "*.c")
 src_objs  = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(srcs))
 deps      = $(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.d, $(srcs))
 
+# Compilation options
+CFLAGS += $(addprefix -D,$(OPTIONS))
 
 all: $(BINDIR)/$(TARGET)
+
 
 $(BINDIR)/$(TARGET): $(src_objs)
 	@echo Linking $@
 	@$(CC) $^ -o $@ -s $(RAYLIB_FLAGS)
-	cp $(ICO_FILE) $(BINDIR)
+ifeq ($(PLATFORM),web)
+	@cp $(ICO_FILE) $(BINDIR)
+endif
+
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	@echo Compiling $< to $@

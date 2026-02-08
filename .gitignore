@@ -59,3 +59,7 @@ raylib/lib/
 
 # Asset files
 asset/
+
+# Build files
+bin/
+!bin/.gitkeep

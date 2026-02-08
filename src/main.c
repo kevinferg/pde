@@ -67,7 +67,7 @@ int run_demo(void) {
 
     #ifdef PLATFORM_WEB
         emscripten_set_main_loop_arg(web_loop, &state, 0, 1);
-    # else
+    #else
         while (!render_escape()) {
             update_controls();
             update_frame(&state);
