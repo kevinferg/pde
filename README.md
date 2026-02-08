@@ -12,29 +12,9 @@ Equations implemented so far:
 - Tab to switch equations
 
 ## Compilation
-Set up raylib as described [here](raylib/README.md). Then build with `make` and run `./bin/main`.
+Compilation instructions [here](raylib/README.md).  
 
-
-### For web
-
-Setup:
-- Set up emscripten emsdk
-- Compile raylib's libraylib.a from source using emcc and put in `raylib_web/lib`
-- Refactor main loop for browser with `emscripten_set_main_loop[_arg]()`
-
-Then:
-```
-(In emsdk directory)
-./emsdk_env.bat
-
-(In root directory)
-make clean
-make PLATFORM=web
-cd bin 
-
-(In bin directory)
-python -m http.server
-
-(In browser)
-http://localhost:8000/index.html
-```
+Requirements:
+- [MinGW-w64](https://github.com/skeeto/w64devkit/releases) (for Windows)
+- [raylib](https://github.com/raysan5/raylib/releases)
+- [emscripten SDK](https://github.com/emscripten-core/emsdk) (for Web)  
