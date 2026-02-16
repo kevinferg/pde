@@ -17,6 +17,7 @@ typedef struct Window {
     int flip_y;
     Color bg_color;
     char* name;
+    Font font;
 } Window;
 
 extern Window main_window;

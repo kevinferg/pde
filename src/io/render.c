@@ -7,6 +7,7 @@
 #include "raylib.h"
 #include "input.h"
 #include "utils/color.h"
+#include "utils/raylib_table.h"
 
 #include "render.h"
 
@@ -30,6 +31,7 @@ Window main_window = {
 
 /*******************************************************/
 
+int render_controls_table(ProgramState* state);
 int render_cursor(void);
 int render_grid(FloatGrid* grid);
 
@@ -57,6 +59,12 @@ int render_escape(void) {
     return WindowShouldClose();
 }
 
+float get_current_window_scale(void) {
+    float sx = (float)GetScreenWidth()  / DEFAULT_WINDOW_WIDTH;
+    float sy = (float)GetScreenHeight() / DEFAULT_WINDOW_HEIGHT;
+    return sx < sy? sx: sy;
+}
+
 int render_frame(ProgramState* state) {
     if (window_was_resized()) update_window_size();
 
@@ -64,7 +72,8 @@ int render_frame(ProgramState* state) {
         ClearBackground(main_window.bg_color);
         
         // Render everything here
-        render_grid(&(state->grid));
+        render_grid(&(state->grid));     
+        render_controls_table(state);
         render_cursor();
 
     EndDrawing();
@@ -179,4 +188,41 @@ int render_grid(FloatGrid* grid) {
         WHITE
     );
     return 0;
+}
+
+int render_controls_table(ProgramState* state) {
+    static RaylibTable table = {
+            .num_cols = 3,
+            .col_width = {100, 200, 150},
+            .col_color = {rgb(48, 0, 192), rgb(0,0,0), rgb(166, 0, 192)},
+            .col_align = {ALIGN_RIGHT, ALIGN_LEFT, ALIGN_LEFT},
+
+            .bg_color = rgb(255, 255, 255),
+            .border_color = rgb(0, 0, 0),
+            .border_thickness = 5,
+            
+            .box_pad = 8,
+            .col_pad = 10,
+            .row_pad = 4,
+        };
+
+        char* current_pde = state->pde? "Cahn-Hilliard": "Swift-Hohenberg";
+        char* sim_state = state->paused? "Paused": "Playing";
+        char brush_str[20];
+        sprintf(brush_str, "%g", controls.size);
+        create_raylib_table(&table);
+
+        float scale = get_current_window_scale();
+
+        add_raylib_table_row(&table, "[TAB]",   "Change current PDE:",    current_pde);
+        add_raylib_table_row(&table, "[SPACE]", "Pause/Play simulation:", sim_state);
+        add_raylib_table_row(&table, "[-/+]",   "Change brush size",      brush_str);
+        add_raylib_table_row(&table, "[Scroll]","(same as above)",    "-");
+        add_raylib_table_row(&table, "[Left click]", "Paint value -1", "(Blue)");
+        add_raylib_table_row(&table, "[Right click]", "Paint value +1", "(Red)");
+        add_raylib_table_row(&table, "[L+R click]", "Paint value 0", "(White)");
+        draw_raylib_table(&table,
+                        (Vector2){ 50*scale + 950, 50*scale},
+                        18, scale);
+
 }

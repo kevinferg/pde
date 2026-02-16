@@ -14,6 +14,7 @@ typedef struct ColorMap {
 } ColorMap;
 
 #define rgb(r,g,b) (Color){r,g,b,255}
+#define rgba(r,g,b,a) (Color){r,g,b,a}
 
 Color map_color(float val, ColorMap* cm);
 
