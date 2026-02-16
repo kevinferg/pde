@@ -6,10 +6,8 @@
 #include "constants.h"
 #include "types.h"
 #include "raylib.h"
-#include "io/render.h"
-#include "io/input.h"
-#include "utils/rng.h"
-#include "utils/fft.h"
+#include "io.h"
+#include "utils.h"
 
 
 int step_pde(ProgramState* state);
@@ -131,24 +129,22 @@ void draw_between_grid_indices(FloatGrid* grid, float value, int prev_r, int pre
     }
 }
 
+#define GRID_X(mx, panel, res) (((mx) - (panel).x) * (res) / (panel).width)
+#define GRID_Y(my, panel, res) (((my) - (panel).y) * (res) / (panel).height)
+
 int update_grid_with_cursor(ProgramState* state) {
     if (!controls.left && !controls.right) {
         return 0;
     }
-
-    int min_dim = main_window.min_dim;
-    int x0 = (main_window.width  - min_dim)/2;
-    int y0 = (main_window.height - min_dim)/2;
-    int gx = (controls.c - x0) * RES / min_dim;
-    int gy = (controls.r - y0) * RES / min_dim;
-    int prev_gx = (controls.prev_mouse.c - x0) * RES / min_dim;
-    int prev_gy = (controls.prev_mouse.r - y0) * RES / min_dim;
+    int gx = GRID_X(controls.c, main_window.grid_panel, state->grid.cols);
+    int gy = GRID_Y(controls.r, main_window.grid_panel, state->grid.rows);
+    int prev_gx = GRID_X(controls.prev_mouse.c, main_window.grid_panel, state->grid.cols);
+    int prev_gy = GRID_Y(controls.prev_mouse.r, main_window.grid_panel, state->grid.rows);
 
     FloatGrid grid = state->grid;
     float value = -1.0f*(controls.left) + 1.0f*(controls.right);
     
     draw_between_grid_indices(&grid, value, prev_gy, prev_gx, gy, gx);
-
     return 0;
 }
 

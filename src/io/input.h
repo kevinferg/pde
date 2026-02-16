@@ -10,7 +10,6 @@
 /**************************************/
 
 #define MOUSE_MEMBERS \
-    float x, y;       \
     int r, c;         \
     uint8_t left, right;
 
@@ -46,7 +45,6 @@ typedef struct Controls {
     
     // Other
     float size, min_size, max_size;
-    Color color, left_color, right_color;
     int allow_resize;
 } Controls;
 

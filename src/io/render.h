@@ -18,6 +18,10 @@ typedef struct Window {
     Color bg_color;
     char* name;
     Font font;
+    Rectangle grid_panel;
+    Vector2 table_location;
+    int table_below;
+    float table_scale;
 } Window;
 
 extern Window main_window;

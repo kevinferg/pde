@@ -9,9 +9,6 @@
 
 Controls controls = {
     .min_size = 5, .max_size = 500, .size = 45,
-    .color = BLACK,
-    .left_color  = (Color){ 253, 249, 0, 127},
-    .right_color = (Color){ 0, 121, 241, 127},
     .allow_resize = 1,
     .left = 0, .right = 0,
 };
@@ -23,7 +20,6 @@ void update_cursor(void) {
 
     controls.r = GetMouseY();
     controls.c = GetMouseX();
-    rowcol_to_xy(controls.r, controls.c, &controls.x, &controls.y);
 
     if (controls.allow_resize) {
         float resize =   GetMouseWheelMove() 
