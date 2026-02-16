@@ -1,6 +1,8 @@
 # Interactive PDE Visualizer
 Visualize and interact with PDEs. Made in C with raylib.  
 
+Try it on GitHub Pages (using a mouse is recommended): [https://kevinferg.github.io/pde/](https://kevinferg.github.io/pde/)
+
 Equations implemented so far:
 - Swift-Hohenberg Equation
 - Cahn-Hilliard Equation
